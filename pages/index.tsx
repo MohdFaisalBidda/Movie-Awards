@@ -16,6 +16,9 @@ interface CATITEM extends ITEM {
 
 const Home: NextPage = () => {
   const [data, setData] = useState([]);
+  const [selectedItems, setSelectedItems] = useState<{ [key: string]: ITEM }>(
+    {}
+  );
 
   useEffect(() => {
     const getAwardsData = async () => {
@@ -24,8 +27,27 @@ const Home: NextPage = () => {
       setData(awards.items);
       console.log(awards.items);
     };
+    console.log(selectedItems);
+
     getAwardsData();
-  }, []);
+  }, [selectedItems]);
+
+  const handleSelect = (categoryId: string, selectedItem: ITEM) => {
+    setSelectedItems((prevSelected) => {
+      const updatedSelectedItems = { ...prevSelected };
+
+      delete updatedSelectedItems[categoryId];
+
+      updatedSelectedItems[categoryId] = selectedItem;
+      return updatedSelectedItems;
+    });
+  };
+
+  const isSelected = (categoryId: string, itemId: ITEM) => {
+    // console.log(selectedItems[categoryId].id,itemId.id);
+
+    return selectedItems[categoryId]?.id === itemId.id;
+  };
 
   return (
     <div>
@@ -47,19 +69,36 @@ const Home: NextPage = () => {
                 {it.items.map((item: ITEM) => (
                   <div
                     key={item.id}
-                    className="flex flex-col items-center bg-[#009B86] rounded-2xl w-fit gap-y-8 py-10 px-10 border shadow-md"
+                    className={`flex flex-col items-center  rounded-2xl w-fit gap-y-8 py-10 px-10 border shadow-md ${
+                      isSelected(it.id, item) ? "bg-[#009B86]" : ""
+                    }`}
                   >
-                    <h1 className="text-2xl font-medium text-white bg-[#009B86]">
+                    <h1
+                      className={`${
+                        isSelected(it.id, item) ? "bg-[#009B86]" : ""
+                      } text-2xl font-medium text-white`}
+                    >
                       {item.title}
                     </h1>
                     <Image
                       src={item.photoUrL}
                       width={350}
                       height={350}
-                      className="object-contain w-full bg-[#009B86]"
+                      className={`"object-contain w-full ${
+                        isSelected(it.id, item) ? "bg-[#009B86]" : ""
+                      }`}
                     />
-                    <div className="w-full px-10 bg-[#009B86]">
-                      <button className="p-4 bg-[#34AC9C] rounded-2xl w-full text-lg text-white hover:text-[#CCCCCC] transition-all ease-in-out duration-200">
+                    <div
+                      className={`${
+                        isSelected(it.id, item)
+                          ? "bg-[#009B86] w-full px-10"
+                          : "w-full px-10"
+                      }`}
+                    >
+                      <button
+                        onClick={() => handleSelect(it.id, item)}
+                        className="p-4 bg-[#34AC9C] rounded-2xl w-full text-lg text-white hover:text-[#CCCCCC] transition-all ease-in-out duration-200"
+                      >
                         Select
                       </button>
                     </div>
