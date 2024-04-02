@@ -3,6 +3,7 @@ import Head from "next/head";
 import Image from "next/image";
 import Header from "../components/Header";
 import { useEffect, useState } from "react";
+import Modal from "../components/Modal";
 
 interface ITEM {
   title: string;
@@ -19,6 +20,15 @@ const Home: NextPage = () => {
   const [selectedItems, setSelectedItems] = useState<{ [key: string]: ITEM }>(
     {}
   );
+  let [isOpen, setIsOpen] = useState(false);
+
+  function closeModal() {
+    setIsOpen(false);
+  }
+
+  function openModal() {
+    setIsOpen(true);
+  }
 
   useEffect(() => {
     const getAwardsData = async () => {
@@ -59,7 +69,8 @@ const Home: NextPage = () => {
 
       <div>
         <Header />
-        <div className="my-24 space-y-20 mx-40">
+        <Modal isOpen={isOpen} closeModal={closeModal} />
+        <div className="mt-24 mb-20 space-y-20 mx-8 lg:mx-40">
           {data.map((it: CATITEM) => (
             <div key={it.id} className="space-y-10">
               <h1 className="text-4xl border-b-4 w-fit border-[#009B86] text-white">
@@ -107,6 +118,14 @@ const Home: NextPage = () => {
               </div>
             </div>
           ))}
+          <div className="flex justify-end items-center">
+            <button
+              onClick={openModal}
+              className="p-4 mt-10 bg-[#34AC9C] rounded-2xl max-w-[20rem] w-full text-lg text-white hover:text-[#CCCCCC] transition-all ease-in-out duration-200"
+            >
+              Submit
+            </button>
+          </div>
         </div>
       </div>
     </div>
